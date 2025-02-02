@@ -30,7 +30,4 @@ No modules.
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_bucket_id"></a> [bucket\_id](#output\_bucket\_id) | Bucket OCID |
-| <a name="output_bucket_name"></a> [bucket\_name](#output\_bucket\_name) | Bucket Name |
+No outputs.
