@@ -16,6 +16,7 @@ jobs:
       - name: "Write Config & Key Files"
         run: |
           mkdir ~/.oci
+          mkdir ~/.aws
           echo "[DEFAULT]" >> ~/.oci/config
           echo "user=${{secrets.OCI_USER_OCID}}" >> ~/.oci/config
           echo "fingerprint=${{secrets.OCI_FINGERPRINT}}" >> ~/.oci/config
@@ -23,6 +24,9 @@ jobs:
           echo "tenancy=${{secrets.OCI_TENANCY_OCID}}" >> ~/.oci/config
           echo "key_file=~/.oci/key.pem" >> ~/.oci/config
           echo "${{secrets.OCI_KEY_FILE}}" >> ~/.oci/key.pem
+          echo "[default]" >> ~/.aws/credentials
+          echo "aws_access_key_id=${{secrets.AWS_ACCESS_KEY_ID}}" >> ~/.aws/credentials
+          echo "aws_secret_access_key=${{secrets.AWS_SECRET_ACCESS_KEY}}" >> ~/.aws/credentials
 
       - name: "Install OCI CLI"
         run: |
@@ -51,13 +55,17 @@ jobs:
         run: terraform validate
 
       - name: Terraform Plan
-        id: plan
-        run: terraform plan
-        continue-on-error: true
+        run: terraform plan -out=tfplan
+
+      - name: Save Terraform Plan
+        uses: actions/upload-artifact@v2
+        with:
+          name: tfplan
+          path: tfplan
 
       - name: Terraform Plan Status
         if: steps.plan.outcome == 'failure'
         run: exit 1
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
+        run: terraform apply tfplan -auto-approve
