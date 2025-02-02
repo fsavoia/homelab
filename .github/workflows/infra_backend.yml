@@ -94,7 +94,7 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           approvers: "fsavoia"
-          secret: ${{ secrets.GITHUB_TOKEN }}
+          secret: ${{ secrets.PAT_TOKEN }}
 
       - name: Terraform Apply
         run: terraform apply -input=false -auto-approve tfplan
