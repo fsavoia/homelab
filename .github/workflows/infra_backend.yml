@@ -8,7 +8,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: Terraform
+        working-directory: terraform/oracle/infra_backend
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2
@@ -23,8 +23,6 @@ jobs:
           echo "tenancy=${{secrets.OCI_TENANCY_OCID}}" >> ~/.oci/config
           echo "key_file=~/.oci/key.pem" >> ~/.oci/config
           echo "${{secrets.OCI_KEY_FILE}}" >> ~/.oci/key.pem
-          cat ~/.oci/config
-          cat ~/.oci/key.pem
 
       - name: "Install OCI CLI"
         run: |
