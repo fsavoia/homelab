@@ -64,7 +64,7 @@ jobs:
         run: |
           terraform init \
             -backend-config="bucket=$BUCKET_NAME" \
-            -backend-config="endpoints={s3=$S3_ENDPOINT}" \
+            -backend-config='endpoints={s3="${{ secrets.S3_ENDPOINT }}"}' \
 
       - name: Terraform format
         id: fmt
