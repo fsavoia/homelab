@@ -41,7 +41,7 @@ jobs:
           oci setup repair-file-permissions --file /home/runner/.oci/config
           oci setup repair-file-permissions --file /home/runner/.oci/key.pem
 
-      - name: "Setup Terraform"
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.10.5
@@ -58,6 +58,12 @@ jobs:
         id: validate
         run: terraform validate
 
+      - name: Setup Dynamic Sensitve Variables
+        run: |
+          echo "TF_VAR_namespace=${{ secrets.NAMESPACE }}" >> $GITHUB_ENV
+          echo "TF_VAR_compartment_id=${{ secrets.COMPARTMENT_ID }}" >> $GITHUB_ENV
+          echo "TF_VAR_bucket_name=${{ secrets.BUCKET_NAME }}" >> $GITHUB_ENV
+
       - name: Terraform Plan
         id: plan
         run: |
@@ -67,11 +73,6 @@ jobs:
       - name: Terraform Plan Status
         if: env.PLAN_FAILED == 'true'
         run: exit 1
-
-      - name: Manual Approval
-        uses: hmarr/auto-approve-action@v2
-        with:
-          message: "Please approve the Terraform apply step."
 
       - name: Terraform Apply
         run: terraform apply -input=false -auto-approve tfplan
