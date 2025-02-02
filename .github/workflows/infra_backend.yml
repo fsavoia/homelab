@@ -42,7 +42,7 @@ jobs:
           oci setup repair-file-permissions --file /home/runner/.oci/key.pem
 
       - name: "Setup Terraform"
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.10.5
 
