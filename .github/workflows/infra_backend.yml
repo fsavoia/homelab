@@ -61,24 +61,17 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: |
-          terraform plan -no-color -input=false -out=tfplan || echo "PLAN_FAILED=true" >> $GITHUB_ENV
+          terraform plan -input=false -out=tfplan || echo "PLAN_FAILED=true" >> $GITHUB_ENV
         continue-on-error: true
-
-      - name: Debug Terraform Plan File
-        run: ls -l
-
-      - name: Save Terraform Plan
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan
-          path: terraform/oracle/infra_backend/tfplan
 
       - name: Terraform Plan Status
         if: env.PLAN_FAILED == 'true'
         run: exit 1
 
-      - name: Debug Terraform Plan File
-        run: ls -l
+      - name: Manual Approval
+        uses: hmarr/auto-approve-action@v2
+        with:
+          message: "Please approve the Terraform apply step."
 
       - name: Terraform Apply
         run: terraform apply -input=false -auto-approve tfplan
