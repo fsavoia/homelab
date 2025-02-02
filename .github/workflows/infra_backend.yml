@@ -95,6 +95,9 @@ jobs:
         with:
           approvers: "fsavoia"
           secret: ${{ secrets.PAT_TOKEN }}
+          minimum-approvals: 1
+          issue-title: "Manual Approval Required for Terraform Apply"
+          issue-body: "Please approve or deny the deployment."
 
       - name: Terraform Apply
         run: terraform apply -input=false -auto-approve tfplan
