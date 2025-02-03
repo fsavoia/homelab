@@ -3,3 +3,8 @@
 # homelab
 
 This repository contains the code to create my homelab and cloud lab environments.
+
+## Contributing
+
+If you want to contribute to this project, please read the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
