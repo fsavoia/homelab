@@ -1,4 +1,4 @@
-name: infra_backend - IaC Validation
+name: infra_backend_validation
 on:
   push:
     branches:
