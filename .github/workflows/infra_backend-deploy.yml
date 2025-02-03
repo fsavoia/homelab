@@ -97,11 +97,15 @@ jobs:
           terraform plan -input=false -no-color -out=tfplan || echo "PLAN_FAILED=true" >> $GITHUB_ENV
         continue-on-error: true
 
-      - name: Upload Terraform Plan
-        uses: actions/upload-artifact@v4
-        with:
-          name: tfplan
-          path: terraform/oracle/infra_backend/tfplan
+      - name: Upload Terraform Plan to OCI
+        run: |
+          COMMIT_SHA=${{ github.sha }}
+          OBJECT_NAME="tfplan_${COMMIT_SHA}"
+          BUCKET_NAME="$BUCKET_NAME"
+
+          oci os object put --bucket-name "$BUCKET_NAME" \
+            --name "$OBJECT_NAME" --file "terraform/oracle/infra_backend/tfplan" \
+            --force
 
       - name: Update Pull Request
         uses: actions/github-script@v7
@@ -135,7 +139,6 @@ jobs:
 
   apply:
     if: github.event_name == 'push'
-    needs: plan
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -173,10 +176,15 @@ jobs:
           oci setup repair-file-permissions --file /home/runner/.oci/config
           oci setup repair-file-permissions --file /home/runner/.oci/key.pem
 
-      - name: Download Terraform Plan
-        uses: actions/download-artifact@v4
-        with:
-          name: tfplan
+      - name: Download Terraform Plan from OCI
+        run: |
+          COMMIT_SHA=${{ github.sha }}
+          OBJECT_NAME="tfplan_${COMMIT_SHA}"
+          BUCKET_NAME="$BUCKET_NAME"
+
+          oci os object get --bucket-name "$BUCKET_NAME" \
+            --name "$OBJECT_NAME" --file "terraform/oracle/infra_backend/tfplan" \
+            --force
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
