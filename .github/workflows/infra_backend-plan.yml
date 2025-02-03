@@ -1,6 +1,10 @@
-name: Create Backend Infra on OCI
+name: infra_backend - IaC Plan
 on:
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "terraform/oracle/infra_backend/**"
 
 env:
   BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
@@ -16,7 +20,7 @@ env:
   OCI_KEY_FILE: ${{ secrets.OCI_KEY_FILE }}
 
 jobs:
-  Infra_Backend-Deployment:
+  plan-infra_backend:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -62,9 +66,9 @@ jobs:
       - name: Terraform Init
         id: init
         run: |
-          terraform init \
+          terraform init -no-color \
             -backend-config="bucket=$BUCKET_NAME" \
-            -backend-config='endpoints={s3="${{ secrets.S3_ENDPOINT }}"}' \
+            -backend-config='endpoints={s3="${{ secrets.S3_ENDPOINT }}"}'
 
       - name: Terraform format
         id: fmt
@@ -72,7 +76,7 @@ jobs:
 
       - name: Terraform Validate
         id: validate
-        run: terraform validate
+        run: terraform validate -no-color
 
       - name: Setup Dynamic Sensitve Variables
         run: |
@@ -83,21 +87,41 @@ jobs:
       - name: Terraform Plan
         id: plan
         run: |
-          terraform plan -input=false -out=tfplan || echo "PLAN_FAILED=true" >> $GITHUB_ENV
+          terraform plan -input=false -no-color -out=tfplan || echo "PLAN_FAILED=true" >> $GITHUB_ENV
         continue-on-error: true
+
+      - name: Update Pull Request
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PAT_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization 🤖\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${{ steps.plan.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
 
       - name: Terraform Plan Status
         if: env.PLAN_FAILED == 'true'
         run: exit 1
 
-      - name: Manual Approval
-        uses: trstringer/manual-approval@v1
+      - name: Upload Terraform Plan
+        uses: actions/upload-artifact@v4
         with:
-          approvers: "fsavoia"
-          secret: ${{ secrets.PAT_TOKEN }}
-          minimum-approvals: 1
-          issue-title: "Manual Approval Required for Terraform Apply"
-          issue-body: "Please approve or deny the deployment."
-
-      - name: Terraform Apply
-        run: terraform apply -input=false -auto-approve tfplan
+          name: tfplan
+          path: tfplan

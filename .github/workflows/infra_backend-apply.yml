@@ -1,0 +1,80 @@
+name: infra_backend - IaC Apply
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "terraform/oracle/infra_backend/**"
+
+env:
+  BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+  S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+  NAMESPACE: ${{ secrets.NAMESPACE }}
+  COMPARTMENT_ID: ${{ secrets.COMPARTMENT_ID }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  OCI_USER_OCID: ${{ secrets.OCI_USER_OCID }}
+  OCI_REGION: ${{ secrets.OCI_REGION }}
+  OCI_TENANCY_OCID: ${{ secrets.OCI_TENANCY_OCID }}
+  OCI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
+  OCI_KEY_FILE: ${{ secrets.OCI_KEY_FILE }}
+
+jobs:
+  apply-infra_backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/oracle/infra_backend
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Write Config & Key Files"
+        run: |
+          mkdir ~/.oci
+          mkdir ~/.aws
+          echo "[DEFAULT]" >> ~/.oci/config
+          echo "user=$OCI_USER_OCID" >> ~/.oci/config
+          echo "fingerprint=$OCI_FINGERPRINT" >> ~/.oci/config
+          echo "region=$OCI_REGION" >> ~/.oci/config
+          echo "tenancy=$OCI_TENANCY_OCID" >> ~/.oci/config
+          echo "key_file=~/.oci/key.pem" >> ~/.oci/config
+          echo "$OCI_KEY_FILE" >> ~/.oci/key.pem
+          echo "[default]" >> ~/.aws/credentials
+          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+
+      - name: "Install OCI CLI"
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          echo "/home/runner/bin" >> $GITHUB_PATH
+          exec -l $SHELL
+
+      - name: "Fix OCI Config File Permissions"
+        run: |
+          oci setup repair-file-permissions --file /home/runner/.oci/config
+          oci setup repair-file-permissions --file /home/runner/.oci/key.pem
+
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan
+          path: .
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.10.5
+
+      - name: Terraform Init
+        id: init
+        run: |
+          terraform init -no-color \
+            -backend-config="bucket=$BUCKET_NAME" \
+            -backend-config='endpoints={s3="${{ secrets.S3_ENDPOINT }}"}'
+
+      - name: Terraform Apply
+        run: terraform apply -input=false -auto-approve tfplan
