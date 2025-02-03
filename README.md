@@ -1,6 +1,7 @@
-[![CI - Backend Infra for IaC on OCI](https://github.com/fsavoia/homelab/actions/workflows/infra_backend.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-check.yml)
-
-[![CD - Backend Infra for IaC on OCI](https://github.com/fsavoia/homelab/actions/workflows/infra_backend.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-deploy.yml)
+[![infra_backend_validation](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-check.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-check.yml)
+[![infra_backend_deploy](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-deploy.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-deploy.yml)
+[![kubernetes_validation](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-check.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-check.yml)
+[![kubernetes_deploy](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-deploy.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-deploy.yml)
 
 # homelab
 
