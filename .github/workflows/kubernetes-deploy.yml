@@ -1,0 +1,212 @@
+name: kubernetes_deploy
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "terraform/oracle/kubernetes/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "terraform/oracle/kubernetes/**"
+
+concurrency:
+  group: "terraform-plan-${{ github.workflow }}"
+  cancel-in-progress: false
+
+env:
+  BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+  S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+  NAMESPACE: ${{ secrets.NAMESPACE }}
+  COMPARTMENT_ID: ${{ secrets.COMPARTMENT_ID }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  OCI_USER_OCID: ${{ secrets.OCI_USER_OCID }}
+  OCI_REGION: ${{ secrets.OCI_REGION }}
+  OCI_TENANCY_OCID: ${{ secrets.OCI_TENANCY_OCID }}
+  OCI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
+  OCI_KEY_FILE: ${{ secrets.OCI_KEY_FILE }}
+
+jobs:
+  plan:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/oracle/infra_backend
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Write Config & Key Files"
+        run: |
+          mkdir ~/.oci
+          mkdir ~/.aws
+          echo "[DEFAULT]" >> ~/.oci/config
+          echo "user=$OCI_USER_OCID" >> ~/.oci/config
+          echo "fingerprint=$OCI_FINGERPRINT" >> ~/.oci/config
+          echo "region=$OCI_REGION" >> ~/.oci/config
+          echo "tenancy=$OCI_TENANCY_OCID" >> ~/.oci/config
+          echo "key_file=~/.oci/key.pem" >> ~/.oci/config
+          echo "$OCI_KEY_FILE" >> ~/.oci/key.pem
+          echo "[default]" >> ~/.aws/credentials
+          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+
+      - name: "Install OCI CLI"
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          echo "/home/runner/bin" >> $GITHUB_PATH
+          exec -l $SHELL
+
+      - name: "Fix OCI Config File Permissions"
+        run: |
+          oci setup repair-file-permissions --file /home/runner/.oci/config
+          oci setup repair-file-permissions --file /home/runner/.oci/key.pem
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.10.5
+
+      - name: Terraform Init
+        id: init
+        run: |
+          terraform init -no-color \
+            -backend-config="bucket=$BUCKET_NAME" \
+            -backend-config='endpoints={s3="${{ secrets.S3_ENDPOINT }}"}'
+
+      - name: Terraform format
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+
+      - name: Setup Dynamic Sensitive Variables
+        run: |
+          echo "TF_VAR_namespace=$NAMESPACE" >> $GITHUB_ENV
+          echo "TF_VAR_compartment_id=$COMPARTMENT_ID" >> $GITHUB_ENV
+          echo "TF_VAR_bucket_name=$BUCKET_NAME" >> $GITHUB_ENV
+
+      - name: Terraform Plan
+        id: plan
+        run: |
+          terraform plan -input=false -no-color -out=tfplan || echo "PLAN_FAILED=true" >> $GITHUB_ENV
+        continue-on-error: true
+
+      - name: Upload Terraform Plan to OCI
+        run: |
+          WORKFLOW_NAME=${{ github.workflow }}
+          OBJECT_NAME="tfplan_${WORKFLOW_NAME}"
+          BUCKET_NAME="$BUCKET_NAME"
+
+          oci os object put --bucket-name "$BUCKET_NAME" \
+            --name "$OBJECT_NAME" --file "tfplan" \
+            --force
+
+      - name: Update Pull Request
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PAT_TOKEN }}
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization 🤖\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${{ steps.plan.outputs.stdout }}
+            \`\`\`
+
+            </details>
+
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - name: Terraform Plan Status
+        if: env.PLAN_FAILED == 'true'
+        run: exit 1
+
+  apply:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/oracle/infra_backend
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Write Config & Key Files"
+        run: |
+          mkdir ~/.oci
+          mkdir ~/.aws
+          echo "[DEFAULT]" >> ~/.oci/config
+          echo "user=$OCI_USER_OCID" >> ~/.oci/config
+          echo "fingerprint=$OCI_FINGERPRINT" >> ~/.oci/config
+          echo "region=$OCI_REGION" >> ~/.oci/config
+          echo "tenancy=$OCI_TENANCY_OCID" >> ~/.oci/config
+          echo "key_file=~/.oci/key.pem" >> ~/.oci/config
+          echo "$OCI_KEY_FILE" >> ~/.oci/key.pem
+          echo "[default]" >> ~/.aws/credentials
+          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+
+      - name: "Install OCI CLI"
+        run: |
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          echo "/home/runner/bin" >> $GITHUB_PATH
+          exec -l $SHELL
+
+      - name: "Fix OCI Config File Permissions"
+        run: |
+          oci setup repair-file-permissions --file /home/runner/.oci/config
+          oci setup repair-file-permissions --file /home/runner/.oci/key.pem
+
+      - name: Download Terraform Plan from OCI
+        run: |
+          OBJECT_NAME="tfplan_${{ github.workflow }}"
+          BUCKET_NAME="$BUCKET_NAME"
+
+          oci os object get --bucket-name "$BUCKET_NAME" \
+            --name "$OBJECT_NAME" --file "tfplan"
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.10.5
+
+      - name: Terraform Init
+        id: init
+        run: |
+          terraform init -no-color \
+            -backend-config="bucket=$BUCKET_NAME" \
+            -backend-config='endpoints={s3="${{ secrets.S3_ENDPOINT }}"}'
+
+      - name: Terraform Apply
+        run: terraform apply -input=false -auto-approve tfplan
+
+      - name: Delete Terraform Plan from OCI Bucket
+        run: |
+          OBJECT_NAME="tfplan_${{ github.workflow }}"
+          BUCKET_NAME="$BUCKET_NAME"
+
+          oci os object delete --bucket-name "$BUCKET_NAME" \
+            --name "$OBJECT_NAME" --force

@@ -1,0 +1,55 @@
+name: kubernetes_validation
+on:
+  push:
+    branches:
+      - "*"
+      - "!main"
+    paths:
+      - "terraform/oracle/kubernetes/**"
+
+env:
+  TF_LOG: INFO
+  TF_INPUT: false
+  BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+  S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+jobs:
+  validate-infra_backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform/oracle/kubernetes
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v2
+
+      - name: "Write Config & Key Files"
+        run: |
+          mkdir ~/.aws
+          echo "[default]" >> ~/.aws/credentials
+          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
+          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.10.5
+
+      - name: Terraform Init
+        id: init
+        run: |
+          terraform init \
+            -backend-config="bucket=$BUCKET_NAME" \
+            -backend-config='endpoints={s3="${{ secrets.S3_ENDPOINT }}"}'
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Terraform Validate
+        id: validate
+        if: success() || failure()
+        run: terraform validate

@@ -1,7 +1,7 @@
 # (Terraform version >= 1.6.4)
 terraform {
   backend "s3" {
-    key                         = "terraform.tfstate"
+    key                         = "k8s.tfstate"
     region                      = "eu-amsterdam-1"
     skip_region_validation      = true
     skip_credentials_validation = true

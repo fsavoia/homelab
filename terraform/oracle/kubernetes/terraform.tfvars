@@ -1,0 +1,10 @@
+region                      = "eu-amsterdam-1"
+vcn_cidrs                   = ["10.0.0.0/16"]
+vcn_dns_label               = "vcnk8s"
+vcn_name                    = "vcn-k8s"
+private_security_list_name  = "security-list-for-private-subnet"
+public_security_list_name   = "security-list-for-public-subnet"
+private_subnet_cidr_block   = "10.0.1.0/24"
+private_subnet_display_name = "k8s-private-subnet"
+public_subnet_display_name  = "k8s-public-subnet"
+public_cidr_block           = "10.0.0.0/24"
