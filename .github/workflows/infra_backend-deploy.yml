@@ -12,6 +12,10 @@ on:
     paths:
       - "terraform/oracle/infra_backend/**"
 
+concurrency:
+  group: "terraform-plan-${{ github.workflow }}"
+  cancel-in-progress: false
+
 env:
   BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
   S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
@@ -99,8 +103,8 @@ jobs:
 
       - name: Upload Terraform Plan to OCI
         run: |
-          COMMIT_SHA=${{ github.sha }}
-          OBJECT_NAME="tfplan_${COMMIT_SHA}"
+          WORKFLOW_NAME=${{ github.workflow }}
+          OBJECT_NAME="tfplan_${WORKFLOW_NAME}"
           BUCKET_NAME="$BUCKET_NAME"
 
           oci os object put --bucket-name "$BUCKET_NAME" \
@@ -178,8 +182,7 @@ jobs:
 
       - name: Download Terraform Plan from OCI
         run: |
-          COMMIT_SHA=${{ github.sha }}
-          OBJECT_NAME="tfplan_${COMMIT_SHA}"
+          OBJECT_NAME="tfplan_${{ github.workflow }}"
           BUCKET_NAME="$BUCKET_NAME"
 
           oci os object get --bucket-name "$BUCKET_NAME" \
@@ -199,3 +202,11 @@ jobs:
 
       - name: Terraform Apply
         run: terraform apply -input=false -auto-approve tfplan
+
+      - name: Delete Terraform Plan from OCI Bucket
+        run: |
+          OBJECT_NAME="tfplan_${{ github.workflow }}"
+          BUCKET_NAME="$BUCKET_NAME"
+
+          oci os object delete --bucket-name "$BUCKET_NAME" \
+            --name "$OBJECT_NAME" --force
