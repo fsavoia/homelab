@@ -5,7 +5,7 @@ on:
       - "*"
       - "!main"
     paths:
-      - "terraform/oracle/kubernetes/**"
+      - "infrastructure/oracle/kubernetes/**"
 
 env:
   TF_LOG: INFO
@@ -21,7 +21,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: terraform/oracle/kubernetes
+        working-directory: infrastructure/oracle/kubernetes
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2

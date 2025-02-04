@@ -5,7 +5,7 @@ on:
       - "*"
       - "!main"
     paths:
-      - "terraform/oracle/infra_backend/**"
+      - "infrastructure/oracle/infra_backend/**"
 
 env:
   TF_LOG: INFO
@@ -21,7 +21,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: terraform/oracle/infra_backend
+        working-directory: infrastructure/oracle/infra_backend
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2
