@@ -66,8 +66,8 @@ jobs:
 
       - name: "Fix OCI Config File Permissions"
         run: |
-          oci setup repair-file-permissions --file /home/runner/.oci/config
-          oci setup repair-file-permissions --file /home/runner/.oci/key.pem
+          oci setup repair-file-permissions --file ~/.oci/config
+          oci setup repair-file-permissions --file ~/.oci/key.pem
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
