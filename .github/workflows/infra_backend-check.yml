@@ -28,10 +28,10 @@ jobs:
 
       - name: "Write Config & Key Files"
         run: |
-          mkdir ~/.aws
-          echo "[default]" >> ~/.aws/credentials
-          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
-          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+          mkdir /home/runner/.aws
+          echo "[default]" >> /home/runner/.aws/credentials
+          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> /home/runner/.aws/credentials
+          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> /home/runner/.aws/credentials
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -44,6 +44,13 @@ jobs:
           terraform init \
             -backend-config="bucket=$BUCKET_NAME" \
             -backend-config='endpoints={s3="${{ secrets.S3_ENDPOINT }}"}'
+
+      - name: Terraform Trivy Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: "fs"
+          severity: "CRITICAL,HIGH"
+          exit-code: "1"
 
       - name: Terraform Format
         id: fmt

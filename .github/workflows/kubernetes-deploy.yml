@@ -28,6 +28,7 @@ env:
   OCI_TENANCY_OCID: ${{ secrets.OCI_TENANCY_OCID }}
   OCI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
   OCI_KEY_FILE: ${{ secrets.OCI_KEY_FILE }}
+  SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
 
 jobs:
   plan:
@@ -43,18 +44,20 @@ jobs:
 
       - name: "Write Config & Key Files"
         run: |
-          mkdir ~/.oci
-          mkdir ~/.aws
-          echo "[DEFAULT]" >> ~/.oci/config
-          echo "user=$OCI_USER_OCID" >> ~/.oci/config
-          echo "fingerprint=$OCI_FINGERPRINT" >> ~/.oci/config
-          echo "region=$OCI_REGION" >> ~/.oci/config
-          echo "tenancy=$OCI_TENANCY_OCID" >> ~/.oci/config
-          echo "key_file=~/.oci/key.pem" >> ~/.oci/config
-          echo "$OCI_KEY_FILE" >> ~/.oci/key.pem
-          echo "[default]" >> ~/.aws/credentials
-          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
-          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+          mkdir -p /home/runner/.oci
+          mkdir -p /home/runner/.aws
+          mkdir -p /home/runner/.ssh
+          echo "[DEFAULT]" >> /home/runner/.oci/config
+          echo "user=$OCI_USER_OCID" >> /home/runner/.oci/config
+          echo "fingerprint=$OCI_FINGERPRINT" >> /home/runner/.oci/config
+          echo "region=$OCI_REGION" >> /home/runner/.oci/config
+          echo "tenancy=$OCI_TENANCY_OCID" >> /home/runner/.oci/config
+          echo "key_file=/home/runner/.oci/key.pem" >> /home/runner/.oci/config
+          echo "$OCI_KEY_FILE" >> /home/runner/.oci/key.pem
+          echo "[default]" >> /home/runner/.aws/credentials
+          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> /home/runner/.aws/credentials
+          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> /home/runner/.aws/credentials
+          echo "$SSH_PUBLIC_KEY" >> /home/runner/.ssh/id_rsa.pub
 
       - name: "Install OCI CLI"
         run: |
@@ -81,6 +84,13 @@ jobs:
             -backend-config="bucket=$BUCKET_NAME" \
             -backend-config='endpoints={s3="${{ secrets.S3_ENDPOINT }}"}'
 
+      - name: Terraform Trivy Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: "fs"
+          severity: "CRITICAL,HIGH"
+          exit-code: "1"
+
       - name: Terraform format
         id: fmt
         run: terraform fmt -check
@@ -94,6 +104,7 @@ jobs:
           echo "TF_VAR_namespace=$NAMESPACE" >> $GITHUB_ENV
           echo "TF_VAR_compartment_id=$COMPARTMENT_ID" >> $GITHUB_ENV
           echo "TF_VAR_bucket_name=$BUCKET_NAME" >> $GITHUB_ENV
+          echo 'TF_VAR_ssh_public_key_path="/home/runner/.ssh/id_rsa.pub"' >> $GITHUB_ENV
 
       - name: Terraform Plan
         id: plan
@@ -154,18 +165,20 @@ jobs:
 
       - name: "Write Config & Key Files"
         run: |
-          mkdir ~/.oci
-          mkdir ~/.aws
-          echo "[DEFAULT]" >> ~/.oci/config
-          echo "user=$OCI_USER_OCID" >> ~/.oci/config
-          echo "fingerprint=$OCI_FINGERPRINT" >> ~/.oci/config
-          echo "region=$OCI_REGION" >> ~/.oci/config
-          echo "tenancy=$OCI_TENANCY_OCID" >> ~/.oci/config
-          echo "key_file=~/.oci/key.pem" >> ~/.oci/config
-          echo "$OCI_KEY_FILE" >> ~/.oci/key.pem
-          echo "[default]" >> ~/.aws/credentials
-          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
-          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+          mkdir -p /home/runner/.oci
+          mkdir -p /home/runner/.aws
+          mkdir -p /home/runner/.ssh
+          echo "[DEFAULT]" >> /home/runner/.oci/config
+          echo "user=$OCI_USER_OCID" >> /home/runner/.oci/config
+          echo "fingerprint=$OCI_FINGERPRINT" >> /home/runner/.oci/config
+          echo "region=$OCI_REGION" >> /home/runner/.oci/config
+          echo "tenancy=$OCI_TENANCY_OCID" >> /home/runner/.oci/config
+          echo "key_file=/home/runner/.oci/key.pem" >> /home/runner/.oci/config
+          echo "$OCI_KEY_FILE" >> /home/runner/.oci/key.pem
+          echo "[default]" >> /home/runner/.aws/credentials
+          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> /home/runner/.aws/credentials
+          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> /home/runner/.aws/credentials
+          echo "$SSH_PUBLIC_KEY" >> /home/runner/.ssh/id_rsa.pub
 
       - name: "Install OCI CLI"
         run: |

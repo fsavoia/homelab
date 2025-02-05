@@ -50,7 +50,7 @@ jobs:
           echo "fingerprint=$OCI_FINGERPRINT" >> ~/.oci/config
           echo "region=$OCI_REGION" >> ~/.oci/config
           echo "tenancy=$OCI_TENANCY_OCID" >> ~/.oci/config
-          echo "key_file=~/.oci/key.pem" >> ~/.oci/config
+          echo "key_file=/home/runner/.oci/key.pem" >> ~/.oci/config
           echo "$OCI_KEY_FILE" >> ~/.oci/key.pem
           echo "[default]" >> ~/.aws/credentials
           echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
@@ -80,6 +80,13 @@ jobs:
           terraform init -no-color \
             -backend-config="bucket=$BUCKET_NAME" \
             -backend-config='endpoints={s3="${{ secrets.S3_ENDPOINT }}"}'
+
+      - name: Terraform Trivy Scan
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan-type: "fs"
+          severity: "CRITICAL,HIGH"
+          exit-code: "1"
 
       - name: Terraform format
         id: fmt
@@ -161,7 +168,7 @@ jobs:
           echo "fingerprint=$OCI_FINGERPRINT" >> ~/.oci/config
           echo "region=$OCI_REGION" >> ~/.oci/config
           echo "tenancy=$OCI_TENANCY_OCID" >> ~/.oci/config
-          echo "key_file=~/.oci/key.pem" >> ~/.oci/config
+          echo "key_file=/home/runner/.oci/key.pem" >> ~/.oci/config
           echo "$OCI_KEY_FILE" >> ~/.oci/key.pem
           echo "[default]" >> ~/.aws/credentials
           echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
