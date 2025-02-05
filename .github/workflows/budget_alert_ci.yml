@@ -1,4 +1,5 @@
-name: budget_validation
+name: Budget Alert CI
+
 on:
   push:
     branches:
@@ -16,7 +17,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  validate-infra_backend:
+  continuous-integration:
     runs-on: ubuntu-latest
     defaults:
       run:
