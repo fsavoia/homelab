@@ -19,7 +19,12 @@ then
         brew install git-secrets
     elif [ "$(uname)" = "Linux" ]; then
         sudo apt-get update
-        sudo apt-get install -y git-secret
+        sudo apt-get install -y git make
+        git clone https://github.com/awslabs/git-secrets.git
+        cd git-secrets
+        sudo make install
+        cd ..
+        sudo rm -rf git-secrets
     fi
 else
     print_color "green" "git-secrets is already installed."
