@@ -1,11 +1,11 @@
-name: kubernetes_validation
+name: Backend Infra CI
 on:
   push:
     branches:
       - "*"
       - "!main"
     paths:
-      - "terraform/oracle/kubernetes/**"
+      - "infrastructure/oracle/infra_backend/**"
 
 env:
   TF_LOG: INFO
@@ -16,22 +16,22 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
-  validate-infra_backend:
+  continuous-integration:
     runs-on: ubuntu-latest
     defaults:
       run:
         shell: bash
-        working-directory: terraform/oracle/kubernetes
+        working-directory: infrastructure/oracle/infra_backend
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2
 
       - name: "Write Config & Key Files"
         run: |
-          mkdir ~/.aws
-          echo "[default]" >> ~/.aws/credentials
-          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
-          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+          mkdir /home/runner/.aws
+          echo "[default]" >> /home/runner/.aws/credentials
+          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> /home/runner/.aws/credentials
+          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> /home/runner/.aws/credentials
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
