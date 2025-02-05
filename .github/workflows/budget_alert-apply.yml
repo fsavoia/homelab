@@ -30,7 +30,7 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: infrastructure/oracle/kubernetes
+        working-directory: infrastructure/oracle/budget
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2

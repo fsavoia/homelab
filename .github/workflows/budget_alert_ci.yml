@@ -6,7 +6,7 @@ on:
       - "*"
       - "!main"
     paths:
-      - "terraform/oracle/budget/**"
+      - "infrastructure/oracle/budget/**"
 
 env:
   TF_LOG: INFO
@@ -22,17 +22,17 @@ jobs:
     defaults:
       run:
         shell: bash
-        working-directory: terraform/oracle/budget
+        working-directory: infrastructure/oracle/budget
     steps:
       - name: "Checkout"
         uses: actions/checkout@v2
 
       - name: "Write Config & Key Files"
         run: |
-          mkdir ~/.aws
-          echo "[default]" >> ~/.aws/credentials
-          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
-          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+          mkdir /home/runner/.aws
+          echo "[default]" >> /home/runner/.aws/credentials
+          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> /home/runner/.aws/credentials
+          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> /home/runner/.aws/credentials
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
