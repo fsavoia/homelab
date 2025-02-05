@@ -1,4 +1,4 @@
-name: Kubernetes Infra Plan
+name: Kubernetes_Infra_Plan
 
 on:
   pull_request:

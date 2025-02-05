@@ -1,4 +1,4 @@
-name: Kubernetes Infra CI
+name: Kubernetes_CI
 
 on:
   push:

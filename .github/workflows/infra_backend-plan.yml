@@ -1,4 +1,4 @@
-name: Backend Infra Plan
+name: Backend_Infra_Plan
 
 on:
   pull_request:

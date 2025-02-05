@@ -1,4 +1,4 @@
-name: Budget Alert CI
+name: Budget_Alert_CI
 
 on:
   push:
