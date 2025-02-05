@@ -19,7 +19,7 @@ variable "vcn_dns_label" {
 }
 
 variable "vcn_cidrs" {
-  description = "VCN CIDRs list"
+  description = "VCN CIDRs"
   type        = list(string)
 }
 
