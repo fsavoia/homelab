@@ -41,4 +41,4 @@ No modules.
 
 ## Outputs
 
-No outputs for now.
+No outputs.
