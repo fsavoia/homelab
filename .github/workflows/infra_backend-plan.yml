@@ -37,18 +37,18 @@ jobs:
 
       - name: "Write Config & Key Files"
         run: |
-          mkdir ~/.oci
-          mkdir ~/.aws
-          echo "[DEFAULT]" >> ~/.oci/config
-          echo "user=$OCI_USER_OCID" >> ~/.oci/config
-          echo "fingerprint=$OCI_FINGERPRINT" >> ~/.oci/config
-          echo "region=$OCI_REGION" >> ~/.oci/config
-          echo "tenancy=$OCI_TENANCY_OCID" >> ~/.oci/config
-          echo "key_file=/home/runner/.oci/key.pem" >> ~/.oci/config
-          echo "$OCI_KEY_FILE" >> ~/.oci/key.pem
-          echo "[default]" >> ~/.aws/credentials
-          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> ~/.aws/credentials
-          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> ~/.aws/credentials
+          mkdir /home/runner/.oci
+          mkdir /home/runner/.aws
+          echo "[DEFAULT]" >> /home/runner/.oci/config
+          echo "user=$OCI_USER_OCID" >> /home/runner/.oci/config
+          echo "fingerprint=$OCI_FINGERPRINT" >> /home/runner/.oci/config
+          echo "region=$OCI_REGION" >> /home/runner/.oci/config
+          echo "tenancy=$OCI_TENANCY_OCID" >> /home/runner/.oci/config
+          echo "key_file=/home/runner/.oci/key.pem" >> /home/runner/.oci/config
+          echo "$OCI_KEY_FILE" >> /home/runner/.oci/key.pem
+          echo "[default]" >> /home/runner/.aws/credentials
+          echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> /home/runner/.aws/credentials
+          echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> /home/runner/.aws/credentials
 
       - name: "Install OCI CLI"
         run: |
