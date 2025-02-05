@@ -66,7 +66,7 @@ jobs:
 
       - name: Download Terraform Plan from OCI
         run: |
-          OBJECT_NAME="tfplan_${{ github.workflow }}"
+          OBJECT_NAME="tfplan_Budget_Alert_Plan"
           BUCKET_NAME="$BUCKET_NAME"
 
           oci os object get --bucket-name "$BUCKET_NAME" \
