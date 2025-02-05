@@ -1,10 +1,7 @@
-[![infra_backend_validation](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-check.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-check.yml)
-[![infra_backend_deploy](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-deploy.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-deploy.yml)
-[![kubernetes_validation](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-check.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-check.yml)
-[![kubernetes_deploy](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-deploy.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-deploy.yml)
-[![budget_validation](https://github.com/fsavoia/homelab/actions/workflows/budget-check.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/budget-check.yml)
-[![budget_deploy](https://github.com/fsavoia/homelab/actions/workflows/budget-deploy.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/budget-deploy.yml)
-[![Check Secrets](https://github.com/fsavoia/homelab/actions/workflows/check_secrets.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/check_secrets.yml)
+[![Backend_Infra_Apply](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-apply.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-apply.yml)
+[![Budget_Alert_Apply](https://github.com/fsavoia/homelab/actions/workflows/budget_alert-apply.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/budget_alert-apply.yml)
+[![Kubernetes_Apply](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-apply.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-apply.yml)
+[![Check_Secrets](https://github.com/fsavoia/homelab/actions/workflows/check_secrets.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/check_secrets.yml)
 
 # Homelab
 
