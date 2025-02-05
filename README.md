@@ -2,6 +2,9 @@
 [![infra_backend_deploy](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-deploy.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/infra_backend-deploy.yml)
 [![kubernetes_validation](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-check.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-check.yml)
 [![kubernetes_deploy](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-deploy.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-deploy.yml)
+[![budget_validation](https://github.com/fsavoia/homelab/actions/workflows/budget-check.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/budget-check.yml)
+[![budget_deploy](https://github.com/fsavoia/homelab/actions/workflows/budget-deploy.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/budget-deploy.yml)
+[![Check Secrets](https://github.com/fsavoia/homelab/actions/workflows/check_secrets.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/check_secrets.yml)
 
 # Homelab
 
