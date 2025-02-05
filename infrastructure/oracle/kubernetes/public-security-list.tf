@@ -1,13 +1,3 @@
-data "oci_core_vnic_attachments" "worker_vnics" {
-  compartment_id = var.compartment_id
-  instance_id    = oci_core_instance.ubuntu_arm_instance_worker.id
-}
-
-data "oci_core_vnic" "worker_vnic_details" {
-  count   = length(data.oci_core_vnic_attachments.worker_vnics.vnic_attachments)
-  vnic_id = data.oci_core_vnic_attachments.worker_vnics.vnic_attachments[count.index].vnic_id
-}
-
 resource "oci_core_security_list" "public-security-list" {
   compartment_id = var.compartment_id
   vcn_id         = module.vcn.vcn_id
@@ -49,7 +39,7 @@ resource "oci_core_security_list" "public-security-list" {
 
   ingress_security_rules {
     stateless   = false
-    source      = data.oci_core_vnic.worker_vnic_details[*].public_ip
+    source      = "141.144.202.55/32"
     source_type = "CIDR_BLOCK"
     protocol    = "all"
   }
