@@ -28,7 +28,6 @@ env:
   OCI_TENANCY_OCID: ${{ secrets.OCI_TENANCY_OCID }}
   OCI_FINGERPRINT: ${{ secrets.OCI_FINGERPRINT }}
   OCI_KEY_FILE: ${{ secrets.OCI_KEY_FILE }}
-  SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
 
 jobs:
   plan:
@@ -57,7 +56,6 @@ jobs:
           echo "[default]" >> /home/runner/.aws/credentials
           echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> /home/runner/.aws/credentials
           echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> /home/runner/.aws/credentials
-          echo "$SSH_PUBLIC_KEY" >> /home/runner/.ssh/id_rsa.pub
 
       - name: "Install OCI CLI"
         run: |
@@ -178,7 +176,6 @@ jobs:
           echo "[default]" >> /home/runner/.aws/credentials
           echo "aws_access_key_id=$AWS_ACCESS_KEY_ID" >> /home/runner/.aws/credentials
           echo "aws_secret_access_key=$AWS_SECRET_ACCESS_KEY" >> /home/runner/.aws/credentials
-          echo "$SSH_PUBLIC_KEY" >> /home/runner/.ssh/id_rsa.pub
 
       - name: "Install OCI CLI"
         run: |

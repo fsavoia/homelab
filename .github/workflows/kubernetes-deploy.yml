@@ -104,7 +104,7 @@ jobs:
           echo "TF_VAR_namespace=$NAMESPACE" >> $GITHUB_ENV
           echo "TF_VAR_compartment_id=$COMPARTMENT_ID" >> $GITHUB_ENV
           echo "TF_VAR_bucket_name=$BUCKET_NAME" >> $GITHUB_ENV
-          echo 'TF_VAR_ssh_public_key_path="/home/runner/.ssh/id_rsa.pub"' >> $GITHUB_ENV
+          echo "TF_VAR_ssh_public_key_path=/home/runner/.ssh/id_rsa.pub" >> $GITHUB_ENV
 
       - name: Terraform Plan
         id: plan
