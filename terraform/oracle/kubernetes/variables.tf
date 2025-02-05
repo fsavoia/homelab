@@ -51,3 +51,40 @@ variable "public_subnet_display_name" {
   description = "Display name for public subnet"
   type        = string
 }
+
+variable "amd_shape" {
+  description = "Shape for AMD instances"
+  type        = string
+  default     = "VM.Standard.E2.1.Micro"
+}
+
+variable "amd_source_image_id" {
+  description = "Source image for AMD instances"
+  type        = string
+}
+
+variable "ssh_public_key_path" {
+  description = "Path to SSH public key"
+  type        = string
+}
+
+variable "arm_shape" {
+  description = "Shape for ARM instances"
+  type        = string
+  default     = "VM.Standard.A1.Flex"
+}
+
+variable "arm_source_image_id" {
+  description = "Source image for ARM instances"
+  type        = string
+}
+
+variable "arm_ocpus" {
+  description = "Number of OCPUs for ARM instances"
+  type        = number
+}
+
+variable "arm_memory_in_gbs" {
+  description = "Memory in GBs for ARM instances"
+  type        = number
+}

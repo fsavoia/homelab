@@ -8,3 +8,7 @@ private_subnet_cidr_block   = "10.0.1.0/24"
 private_subnet_display_name = "k8s-private-subnet"
 public_subnet_display_name  = "k8s-public-subnet"
 public_cidr_block           = "10.0.0.0/24"
+amd_source_image_id         = "ocid1.image.oc1.eu-amsterdam-1.aaaaaaaaix5kig6jgtgqlsxxz6wr7i4mgm7hpu625k466ppsglfygz3jjaua"
+arm_source_image_id         = "ocid1.image.oc1.eu-amsterdam-1.aaaaaaaaywntulwc3oow6emlgbqanz24vwin5uqlahobvutslcvdbosrlhcq"
+arm_ocpus                   = 2
+arm_memory_in_gbs           = 12

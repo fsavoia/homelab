@@ -42,3 +42,7 @@ output "public-subnet-name" {
 output "public-subnet-OCID" {
   value = oci_core_subnet.vcn-public-subnet.id
 }
+
+output "name-of-first-availability-domain" {
+  value = data.oci_identity_availability_domains.ads.availability_domains[0].name
+}
