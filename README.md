@@ -3,9 +3,33 @@
 [![kubernetes_validation](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-check.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-check.yml)
 [![kubernetes_deploy](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-deploy.yml/badge.svg)](https://github.com/fsavoia/homelab/actions/workflows/kubernetes-deploy.yml)
 
-# homelab
+# Homelab
 
 This repository contains the code to create my homelab and cloud lab environments.
+
+## Git-Secrets Configuration
+
+### Importance
+
+`git-secrets` is an essential tool to ensure that sensitive information, such as passwords and API keys, are not accidentally included in the Git repository. It scans commits and Git hooks to detect patterns that match known secrets and prevents these secrets from being added to the repository.
+
+### How to Configure
+
+To ensure that all developers have `git-secrets` installed and configured correctly, follow the steps below:
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository_url>
+   cd <repository_name>
+
+1. **Run the setup script**:
+   ```bash
+   ./setup_git_secrets.sh
+
+
+### Pipeline
+
+The pipeline is configured to run the `git-secrets` scan before the build process. If any secrets are detected, the pipeline will fail, and the developer will need to remove the secrets before the pipeline can be run successfully.
 
 ## Contributing
 
