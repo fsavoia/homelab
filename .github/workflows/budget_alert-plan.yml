@@ -1,4 +1,4 @@
-name: Budget Alert Plan
+name: Budget_Alert_Plan
 
 on:
   pull_request:

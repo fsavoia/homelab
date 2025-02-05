@@ -1,4 +1,4 @@
-name: Backend Infra Apply
+name: Backend_Infra_Apply
 
 on:
   push:

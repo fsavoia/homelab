@@ -1,4 +1,4 @@
-name: Budget Alert Apply
+name: Budget_Alert_Apply
 
 on:
   push:
