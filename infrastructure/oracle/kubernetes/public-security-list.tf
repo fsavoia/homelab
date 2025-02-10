@@ -45,7 +45,7 @@ resource "oci_core_security_list" "public-security-list" {
 
     tcp_options {
       min = 6443
-      max = 6433
+      max = 6443
     }
   }
 
